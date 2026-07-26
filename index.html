@@ -1,527 +1,606 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>J.A.R.V.I.S. Interface</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Exo+2:wght@300;400;600&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Generator Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f1115;
+      --panel:#171a21;
+      --panel-2:#1f2430;
+      --text:#f3f4f6;
+      --muted:#a6adbb;
+      --accent:#7cf7c4;
+      --accent-2:#7aa2ff;
+      --danger:#ff6b7a;
+      --border:rgba(255,255,255,.08);
+      --glow:0 0 0 1px rgba(124,247,196,.12), 0 18px 60px rgba(0,0,0,.45);
+      --radius:24px;
+    }
 
-  :root{
-    --void:#0A0C10;
-    --void-2:#0F1318;
-    --core:#7FE8E0;
-    --ring:#1B3A4B;
-    --amber:#E8A05C;
-    --text:#E4ECEC;
-    --text-dim:#5C7378;
-  }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
+      font-family:"Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(122,162,255,.16), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(124,247,196,.12), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(255,255,255,.04), transparent 30%),
+        linear-gradient(180deg, #0b0d11 0%, #11141a 100%);
+      overflow-x:hidden;
+    }
 
-  *{box-sizing:border-box; margin:0; padding:0;}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size:32px 32px;
+      mask-image: radial-gradient(circle at center, black 45%, transparent 90%);
+      opacity:.22;
+    }
 
-  html,body{
-    width:100%; height:100%;
-    background:radial-gradient(ellipse at 50% 30%, var(--void-2), var(--void) 70%);
-    color:var(--text);
-    font-family:'Exo 2', sans-serif;
-    overflow:hidden;
-    -webkit-font-smoothing:antialiased;
-  }
+    .page{
+      width:min(1100px, calc(100% - 32px));
+      margin:0 auto;
+      padding:24px 0 48px;
+    }
 
-  .stage{
-    position:relative;
-    width:100%; height:100vh;
-    display:flex; flex-direction:column;
-    align-items:center;
-    padding:5vh 5vw 4vh;
-  }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:14px 18px;
+      margin-top:10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--glow);
+      animation: rise .8s ease both;
+    }
 
-  /* scanline / grid texture */
-  .stage::before{
-    content:"";
-    position:absolute; inset:0;
-    background-image:
-      linear-gradient(rgba(127,232,224,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(127,232,224,0.025) 1px, transparent 1px);
-    background-size:38px 38px;
-    pointer-events:none;
-    mask-image:radial-gradient(ellipse at 50% 40%, black 0%, transparent 70%);
-  }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
 
-  .top-readout{
-    width:100%;
-    max-width:640px;
-    display:flex;
-    justify-content:space-between;
-    font-family:'Space Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.12em;
-    color:var(--text-dim);
-    text-transform:uppercase;
-    z-index:2;
-  }
-  .top-readout .status-dot{
-    width:6px; height:6px; border-radius:50%;
-    background:var(--core);
-    display:inline-block;
-    margin-right:6px;
-    box-shadow:0 0 6px var(--core);
-    animation:blink 2.4s infinite;
-  }
-  @keyframes blink{0%,100%{opacity:1} 50%{opacity:0.35}}
+    .brand-mark{
+      width:40px;
+      height:40px;
+      border-radius:12px;
+      background:
+        linear-gradient(135deg, rgba(124,247,196,.95), rgba(122,162,255,.9));
+      position:relative;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 8px 30px rgba(122,162,255,.22);
+    }
 
-  .core-wrap{
-    position:relative;
-    width:min(46vh, 46vw);
-    height:min(46vh, 46vw);
-    margin:4vh 0 2vh;
-    display:flex; align-items:center; justify-content:center;
-    flex-shrink:0;
-  }
+    .brand-mark::after{
+      content:"";
+      position:absolute;
+      inset:8px;
+      border:1.5px solid rgba(10,12,18,.78);
+      border-radius:10px;
+      transform:rotate(45deg);
+    }
 
-  svg.rings{ position:absolute; inset:0; width:100%; height:100%; }
-  .ring{
-    fill:none;
-    stroke:var(--ring);
-    stroke-width:1;
-    opacity:0.55;
-    transform-origin:50% 50%;
-  }
-  .ring.outer{ stroke-dasharray:2 6; animation:spin 40s linear infinite; }
-  .ring.mid{ stroke-dasharray:1 3; animation:spin 26s linear infinite reverse; }
-  .ring.inner{ animation:spin 14s linear infinite; }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
+    .brand h1{
+      margin:0;
+      font-family:"Syne", sans-serif;
+      font-size:clamp(1rem, 2vw, 1.2rem);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
 
-  .core{
-    position:relative;
-    width:34%; height:34%;
-    border-radius:50%;
-    background:radial-gradient(circle at 40% 35%, #BFFFFA, var(--core) 45%, #1A3E3E 100%);
-    box-shadow:
-      0 0 30px 6px rgba(127,232,224,0.45),
-      0 0 70px 20px rgba(127,232,224,0.15);
-    transition:transform 60ms linear, box-shadow 120ms ease, background 300ms ease;
-    z-index:2;
-  }
-  .core-wrap.listening .core{
-    background:radial-gradient(circle at 40% 35%, #FFE8C8, var(--amber) 45%, #4a2f12 100%);
-    box-shadow:
-      0 0 36px 8px rgba(232,160,92,0.55),
-      0 0 80px 24px rgba(232,160,92,0.18);
-  }
+    .brand p{
+      margin:0;
+      color:var(--muted);
+      font-size:.86rem;
+    }
 
-  .amp-bars{
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    pointer-events:none;
-  }
-  .amp-bars span{
-    position:absolute;
-    width:2px; background:var(--core);
-    border-radius:2px;
-    opacity:0.5;
-    transform-origin:center;
-  }
+    .hero{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:28px;
+      align-items:stretch;
+      padding:42px 0 26px;
+    }
 
-  .status-line{
-    font-family:'Space Mono', monospace;
-    font-size:12px;
-    letter-spacing:0.15em;
-    text-transform:uppercase;
-    color:var(--text-dim);
-    text-align:center;
-    min-height:18px;
-    z-index:2;
-  }
-  .status-line.active{ color:var(--core); }
+    .hero-copy{
+      padding:18px 2px;
+      animation: rise .9s .08s ease both;
+    }
 
-  .transcript{
-    flex:1;
-    width:100%;
-    max-width:640px;
-    margin-top:3vh;
-    overflow-y:auto;
-    z-index:2;
-    padding-right:4px;
-  }
-  .transcript::-webkit-scrollbar{ width:4px; }
-  .transcript::-webkit-scrollbar-thumb{ background:var(--ring); border-radius:2px; }
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:18px;
+      padding:8px 14px;
+      border:1px solid rgba(124,247,196,.22);
+      border-radius:999px;
+      color:var(--accent);
+      background:rgba(124,247,196,.06);
+      font-size:.82rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
 
-  .line{
-    margin-bottom:14px;
-    line-height:1.5;
-    font-size:14.5px;
-    animation:fadein 0.35s ease;
-  }
-  @keyframes fadein{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+    .eyebrow::before{
+      content:"";
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 14px var(--accent);
+    }
 
-  .line .tag{
-    font-family:'Space Mono', monospace;
-    font-size:10px;
-    letter-spacing:0.1em;
-    margin-right:8px;
-  }
-  .line.user .tag{ color:var(--amber); }
-  .line.ai .tag{ color:var(--core); }
-  .line .body{ color:var(--text); }
+    .hero h2{
+      margin:0 0 16px;
+      font-family:"Syne", sans-serif;
+      font-weight:800;
+      line-height:.95;
+      letter-spacing:-.04em;
+      font-size:clamp(2.8rem, 7vw, 6.2rem);
+      max-width:10ch;
+    }
 
-  .controls{
-    z-index:2;
-    display:flex;
-    align-items:center;
-    gap:18px;
-    margin-top:2vh;
-  }
+    .hero p{
+      max-width:60ch;
+      margin:0;
+      font-size:clamp(1rem, 1.6vw, 1.15rem);
+      line-height:1.7;
+      color:var(--muted);
+    }
 
-  .mic-btn{
-    width:64px; height:64px;
-    border-radius:50%;
-    border:1px solid var(--ring);
-    background:rgba(127,232,224,0.04);
-    color:var(--core);
-    cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    transition:all 0.2s ease;
-  }
-  .mic-btn:hover{ background:rgba(127,232,224,0.1); }
-  .mic-btn:focus-visible{ outline:2px solid var(--core); outline-offset:3px; }
-  .mic-btn.active{
-    border-color:var(--amber);
-    color:var(--amber);
-    background:rgba(232,160,92,0.08);
-    box-shadow:0 0 18px rgba(232,160,92,0.3);
-  }
-  .mic-btn svg{ width:24px; height:24px; }
+    .hero-side{
+      display:grid;
+      align-content:start;
+      gap:16px;
+      animation: rise 1s .16s ease both;
+    }
 
-  .text-input-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    width:100%;
-    max-width:640px;
-  }
-  .text-input-row input{
-    flex:1;
-    background:rgba(255,255,255,0.03);
-    border:1px solid var(--ring);
-    color:var(--text);
-    font-family:'Exo 2', sans-serif;
-    font-size:14px;
-    padding:10px 14px;
-    border-radius:6px;
-    outline:none;
-  }
-  .text-input-row input:focus{ border-color:var(--core); }
-  .text-input-row input::placeholder{ color:var(--text-dim); }
+    .panel{
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));
+      backdrop-filter: blur(16px);
+      border-radius:var(--radius);
+      box-shadow:var(--glow);
+    }
 
-  .send-btn{
-    background:transparent;
-    border:1px solid var(--ring);
-    color:var(--core);
-    font-family:'Space Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
-    padding:10px 16px;
-    border-radius:6px;
-    cursor:pointer;
-    transition:all 0.2s ease;
-  }
-  .send-btn:hover{ background:rgba(127,232,224,0.08); }
-  .send-btn:focus-visible{ outline:2px solid var(--core); outline-offset:2px; }
+    .console{
+      padding:20px;
+      min-height:100%;
+      position:relative;
+      overflow:hidden;
+    }
 
-  .voice-select{
-    background:transparent;
-    border:none;
-    color:var(--text-dim);
-    font-family:'Space Mono', monospace;
-    font-size:10px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-  }
-  .voice-select:focus-visible{ outline:1px solid var(--core); }
+    .console::before{
+      content:"";
+      position:absolute;
+      right:-50px;
+      top:-50px;
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(124,247,196,.24), transparent 70%);
+      filter:blur(10px);
+    }
 
-  .hint{
-    font-family:'Space Mono', monospace;
-    font-size:10px;
-    color:var(--text-dim);
-    letter-spacing:0.08em;
-    text-align:center;
-    margin-top:10px;
-    z-index:2;
-  }
+    .console-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+    }
 
-  @media (prefers-reduced-motion: reduce){
-    .ring{ animation:none !important; }
-    .status-dot{ animation:none !important; }
-  }
-</style>
+    .dots{
+      display:flex;
+      gap:8px;
+    }
+
+    .dots span{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      display:block;
+      background:#2a2f3b;
+    }
+
+    .dots span:nth-child(1){background:#ff6b7a}
+    .dots span:nth-child(2){background:#ffc857}
+    .dots span:nth-child(3){background:#7cf7c4}
+
+    .console-title{
+      color:var(--muted);
+      font-size:.88rem;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    .display{
+      padding:18px;
+      border-radius:18px;
+      background:#0c0f14;
+      border:1px solid rgba(255,255,255,.06);
+      min-height:170px;
+    }
+
+    .label{
+      color:var(--muted);
+      font-size:.8rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
+
+    .code{
+      min-height:52px;
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:8px;
+      font-family:"Space Grotesk", sans-serif;
+      font-size:clamp(1.35rem, 3.2vw, 2rem);
+      letter-spacing:.16em;
+      word-break:break-word;
+    }
+
+    .char{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:1ch;
+      padding:6px 4px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      color:var(--text);
+      opacity:0;
+      transform:translateY(8px);
+      animation:charIn .18s ease forwards;
+    }
+
+    .char.remove{
+      color:var(--danger);
+      animation:charOut .16s ease forwards;
+    }
+
+    .status{
+      margin-top:16px;
+      font-size:.98rem;
+      line-height:1.6;
+      color:var(--muted);
+      min-height:52px;
+    }
+
+    .status strong{color:var(--text)}
+    .status .ok{color:var(--accent)}
+    .status .bad{color:var(--danger)}
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:18px;
+    }
+
+    button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      font:inherit;
+      color:var(--text);
+      padding:14px 18px;
+      border-radius:16px;
+      transition:transform .18s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .primary{
+      background:linear-gradient(135deg, var(--accent), #53d8b3);
+      color:#09110d;
+      font-weight:700;
+      box-shadow:0 12px 26px rgba(124,247,196,.2);
+    }
+
+    .secondary{
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--border);
+    }
+
+    button:hover{
+      transform:translateY(-2px) scale(1.01);
+    }
+
+    button:active{
+      transform:translateY(0) scale(.985);
+    }
+
+    .info-strip{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:14px;
+      margin-top:8px;
+    }
+
+    .metric{
+      padding:16px 18px;
+    }
+
+    .metric h3{
+      margin:0 0 6px;
+      font-size:.82rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:500;
+    }
+
+    .metric p{
+      margin:0;
+      font-family:"Syne", sans-serif;
+      font-size:clamp(1.3rem, 3vw, 2rem);
+      letter-spacing:-.03em;
+    }
+
+    .foot{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-top:24px;
+      color:var(--muted);
+      font-size:.92rem;
+      padding:10px 4px 0;
+    }
+
+    .reveal{
+      opacity:0;
+      transform:translateY(18px);
+      transition:opacity .6s ease, transform .6s ease;
+    }
+
+    .reveal.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    @keyframes rise{
+      from{opacity:0; transform:translateY(18px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    @keyframes charIn{
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    @keyframes charOut{
+      to{opacity:0; transform:translateY(-10px); filter:blur(2px)}
+    }
+
+    @media (max-width: 920px){
+      .hero{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 640px){
+      .page{width:min(100% - 20px, 1100px)}
+      .topbar{
+        border-radius:22px;
+        align-items:flex-start;
+      }
+      .info-strip{
+        grid-template-columns:1fr;
+      }
+      .foot{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .code{
+        letter-spacing:.1em;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="page">
+    <nav class="topbar" aria-label="Top navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div>
+          <h1>Validator Loop Demo</h1>
+          <p>Generates 16-character alphanumeric codes and retries until valid</p>
+        </div>
+      </div>
+    </nav>
 
-<div class="stage">
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">HTML5 + JavaScript</div>
+          <h2>Write it. Check it. Erase it. Try again.</h2>
+          <p>
+            This demo creates a random 16-character string using letters and numbers,
+            tests it against a validation rule, and if it fails, deletes it and generates
+            a new one automatically until it finds one that passes.
+          </p>
+        </div>
 
-  <div class="top-readout">
-    <span><span class="status-dot"></span>SYSTEM ONLINE</span>
-    <span id="clock">00:00:00</span>
+        <aside class="hero-side">
+          <div class="panel console">
+            <div class="console-head">
+              <div class="dots" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="console-title">Live generation</div>
+            </div>
+
+            <div class="display">
+              <div class="label">Current 16-character code</div>
+              <div class="code" id="codeDisplay" aria-live="polite"></div>
+              <div class="status" id="statusBox">
+                Press <strong>Start</strong> to begin.
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="startBtn">Start</button>
+              <button class="secondary" id="stopBtn">Stop</button>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="info-strip reveal" aria-label="Statistics">
+        <div class="panel metric">
+          <h3>Attempts</h3>
+          <p id="attempts">0</p>
+        </div>
+        <div class="panel metric">
+          <h3>Last result</h3>
+          <p id="lastResult">—</p>
+        </div>
+        <div class="panel metric">
+          <h3>Accepted code</h3>
+          <p id="acceptedCode">—</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot reveal">
+      <span>Validation rule in this demo: exactly 16 chars, at least 1 uppercase, 1 lowercase, and 1 number.</span>
+      <span>Fully client-side HTML5 example.</span>
+    </footer>
   </div>
 
-  <div class="core-wrap" id="coreWrap">
-    <svg class="rings" viewBox="0 0 200 200">
-      <circle class="ring outer" cx="100" cy="100" r="92"/>
-      <circle class="ring mid" cx="100" cy="100" r="78"/>
-      <circle class="ring inner" cx="100" cy="100" r="64"/>
-    </svg>
-    <div class="amp-bars" id="ampBars"></div>
-    <div class="core" id="core"></div>
-  </div>
+  <script>
+    const codeDisplay = document.getElementById("codeDisplay");
+    const statusBox = document.getElementById("statusBox");
+    const attemptsEl = document.getElementById("attempts");
+    const lastResultEl = document.getElementById("lastResult");
+    const acceptedCodeEl = document.getElementById("acceptedCode");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
 
-  <div class="status-line" id="statusLine">STANDING BY</div>
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let running = false;
+    let attempts = 0;
+    let generationToken = 0;
 
-  <div class="transcript" id="transcript"></div>
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-  <div class="controls">
-    <button class="mic-btn" id="micBtn" aria-label="Toggle voice input" aria-pressed="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-        <line x1="12" y1="19" x2="12" y2="23"/>
-        <line x1="8" y1="23" x2="16" y2="23"/>
-      </svg>
-    </button>
-    <select class="voice-select" id="voiceSelect" aria-label="Voice selection"></select>
-  </div>
+    function randomChar() {
+      return chars[Math.floor(Math.random() * chars.length)];
+    }
 
-  <div class="text-input-row" style="margin-top:14px;">
-    <input type="text" id="textInput" placeholder="Type a command...  e.g. what time is it, tell me a joke, status report" autocomplete="off">
-    <button class="send-btn" id="sendBtn">SEND</button>
-  </div>
+    function generateCode(length = 16) {
+      let result = "";
+      for (let i = 0; i < length; i++) {
+        result += randomChar();
+      }
+      return result;
+    }
 
-  <div class="hint">Voice recognition requires Chrome, Edge, or Safari · mic permission needed</div>
+    function validateCode(code) {
+      const isCorrectLength = code.length === 16;
+      const hasUpper = /[A-Z]/.test(code);
+      const hasLower = /[a-z]/.test(code);
+      const hasNumber = /[0-9]/.test(code);
 
-</div>
+      return isCorrectLength && hasUpper && hasLower && hasNumber;
+    }
 
-<script>
-(function(){
-  const core = document.getElementById('core');
-  const coreWrap = document.getElementById('coreWrap');
-  const statusLine = document.getElementById('statusLine');
-  const transcript = document.getElementById('transcript');
-  const micBtn = document.getElementById('micBtn');
-  const textInput = document.getElementById('textInput');
-  const sendBtn = document.getElementById('sendBtn');
-  const voiceSelect = document.getElementById('voiceSelect');
-  const ampBars = document.getElementById('ampBars');
-  const clockEl = document.getElementById('clock');
-
-  // ---- clock ----
-  function tick(){
-    const d = new Date();
-    clockEl.textContent = d.toLocaleTimeString('en-US', {hour12:false});
-  }
-  tick(); setInterval(tick, 1000);
-
-  // ---- amplitude bars (decorative ring of bars around core) ----
-  const NUM_BARS = 28;
-  const bars = [];
-  for(let i=0;i<NUM_BARS;i++){
-    const b = document.createElement('span');
-    const angle = (i / NUM_BARS) * 360;
-    b.style.height = '6px';
-    b.style.transform = `rotate(${angle}deg) translateY(-78px)`;
-    ampBars.appendChild(b);
-    bars.push(b);
-  }
-  function setAmplitude(level){
-    // level 0..1
-    bars.forEach((b, i) => {
-      const variance = 0.5 + Math.sin(i * 1.3 + Date.now()/180) * 0.5;
-      const h = 4 + level * 26 * variance;
-      b.style.height = h + 'px';
-      b.style.opacity = 0.25 + level * 0.6;
-    });
-    core.style.transform = `scale(${1 + level * 0.06})`;
-  }
-  let idlePhase = 0;
-  function idleAnimate(){
-    idlePhase += 0.02;
-    const breathe = (Math.sin(idlePhase) + 1) / 2 * 0.15;
-    if(!recognitionActive) setAmplitude(breathe);
-    requestAnimationFrame(idleAnimate);
-  }
-  idleAnimate();
-
-  // ---- log lines ----
-  function addLine(who, text){
-    const line = document.createElement('div');
-    line.className = 'line ' + who;
-    const tag = who === 'user' ? 'YOU' : 'JARVIS';
-    line.innerHTML = `<span class="tag">${tag}</span><span class="body"></span>`;
-    line.querySelector('.body').textContent = text;
-    transcript.appendChild(line);
-    transcript.scrollTop = transcript.scrollHeight;
-  }
-
-  function setStatus(text, active){
-    statusLine.textContent = text;
-    statusLine.classList.toggle('active', !!active);
-  }
-
-  // ---- speech synthesis ----
-  let voices = [];
-  function loadVoices(){
-    voices = speechSynthesis.getVoices();
-    voiceSelect.innerHTML = '';
-    voices.forEach((v, i) => {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = v.name + (v.lang ? ' (' + v.lang + ')' : '');
-      voiceSelect.appendChild(opt);
-    });
-    // try to default to a deeper/male-leaning English voice for the JARVIS feel
-    const preferred = voices.findIndex(v => /english/i.test(v.lang) && /male|daniel|arthur|david/i.test(v.name));
-    if(preferred >= 0) voiceSelect.value = preferred;
-  }
-  speechSynthesis.onvoiceschanged = loadVoices;
-  loadVoices();
-
-  let speakingAnimFrame = null;
-  function animateSpeakingAmplitude(utterance){
-    let t = 0;
-    function frame(){
-      t += 0.12;
-      const level = 0.25 + Math.abs(Math.sin(t)) * 0.55;
-      setAmplitude(level);
-      if(speechSynthesis.speaking){
-        speakingAnimFrame = requestAnimationFrame(frame);
-      } else {
-        setAmplitude(0.05);
+    async function typeCode(code, token) {
+      codeDisplay.innerHTML = "";
+      for (let i = 0; i < code.length; i++) {
+        if (!running || token !== generationToken) return;
+        const span = document.createElement("span");
+        span.className = "char";
+        span.textContent = code[i];
+        span.style.animationDelay = `${i * 0.02}s`;
+        codeDisplay.appendChild(span);
+        await wait(65);
       }
     }
-    frame();
-  }
 
-  function speak(text){
-    if(!('speechSynthesis' in window)){
-      addLine('ai', text);
-      return;
-    }
-    speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    const idx = voiceSelect.value;
-    if(idx !== '' && voices[idx]) utter.voice = voices[idx];
-    utter.rate = 1.0;
-    utter.pitch = 0.95;
-    utter.onstart = () => { setStatus('RESPONDING', true); animateSpeakingAmplitude(utter); };
-    utter.onend = () => { setStatus('STANDING BY', false); };
-    speechSynthesis.speak(utter);
-  }
-
-  // ---- simple local "brain" ----
-  function respondTo(input){
-    const q = input.toLowerCase().trim();
-    let reply;
-
-    if(/^(hi|hello|hey)\b/.test(q)){
-      reply = "Good to hear from you. How can I help?";
-    } else if(/what.*time/.test(q)){
-      reply = "It's " + new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'}) + ".";
-    } else if(/what.*date|today.*date/.test(q)){
-      reply = "Today is " + new Date().toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'}) + ".";
-    } else if(/status report|system status/.test(q)){
-      reply = "All systems nominal. Voice interface active, no pending alerts.";
-    } else if(/joke/.test(q)){
-      const jokes = [
-        "I'd tell you a joke about UDP, but you might not get it.",
-        "There are only two hard problems in computer science: cache invalidation, naming things, and off-by-one errors.",
-        "I asked the cloud for a status update. It said partly mysterious, chance of latency."
-      ];
-      reply = jokes[Math.floor(Math.random()*jokes.length)];
-    } else if(/who are you|your name/.test(q)){
-      reply = "A voice interface built for you, in the spirit of Jarvis. I run in this browser tab, nothing more exotic than that.";
-    } else if(/thank/.test(q)){
-      reply = "Anytime.";
-    } else {
-      reply = "I heard: \"" + input + "\". I'm running on simple local logic right now, so I can't reason about that yet, but I can tell time, give a status report, or chat with you.";
-    }
-    addLine('ai', reply);
-    speak(reply);
-  }
-
-  function handleSubmit(text){
-    if(!text.trim()) return;
-    addLine('user', text);
-    respondTo(text);
-    textInput.value = '';
-  }
-
-  sendBtn.addEventListener('click', () => handleSubmit(textInput.value));
-  textInput.addEventListener('keydown', e => { if(e.key === 'Enter') handleSubmit(textInput.value); });
-
-  // ---- speech recognition ----
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let recognition = null;
-  let recognitionActive = false;
-
-  if(SpeechRecognition){
-    recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-
-    recognition.onstart = () => {
-      recognitionActive = true;
-      coreWrap.classList.add('listening');
-      micBtn.classList.add('active');
-      micBtn.setAttribute('aria-pressed', 'true');
-      setStatus('LISTENING', true);
-    };
-
-    recognition.onresult = (event) => {
-      let interim = '';
-      let final = '';
-      for(let i = event.resultIndex; i < event.results.length; i++){
-        const t = event.results[i][0].transcript;
-        if(event.results[i].isFinal) final += t;
-        else interim += t;
+    async function eraseCode(token) {
+      const nodes = Array.from(codeDisplay.querySelectorAll(".char")).reverse();
+      for (const node of nodes) {
+        if (!running || token !== generationToken) return;
+        node.classList.add("remove");
+        await wait(28);
+        node.remove();
       }
-      const level = Math.min(1, 0.3 + (interim.length % 20) / 20);
-      setAmplitude(level);
-      if(final) handleSubmit(final);
-    };
+    }
 
-    recognition.onerror = (e) => {
-      setStatus('MIC ERROR: ' + e.error, false);
-    };
+    async function runGenerator() {
+      generationToken++;
+      const token = generationToken;
+      running = true;
+      acceptedCodeEl.textContent = "—";
 
-    recognition.onend = () => {
-      recognitionActive = false;
-      coreWrap.classList.remove('listening');
-      micBtn.classList.remove('active');
-      micBtn.setAttribute('aria-pressed', 'false');
-      if(statusLine.textContent === 'LISTENING') setStatus('STANDING BY', false);
-    };
+      while (running && token === generationToken) {
+        attempts++;
+        attemptsEl.textContent = attempts;
 
-    micBtn.addEventListener('click', () => {
-      if(recognitionActive){
-        recognition.stop();
-      } else {
-        speechSynthesis.cancel();
-        try{ recognition.start(); } catch(e){ /* already started */ }
+        const code = generateCode(16);
+        statusBox.innerHTML = `Attempt <strong>#${attempts}</strong>: writing candidate...`;
+        await typeCode(code, token);
+        if (!running || token !== generationToken) return;
+
+        await wait(250);
+
+        const valid = validateCode(code);
+
+        if (valid) {
+          lastResultEl.innerHTML = `<span class="ok">Valid</span>`;
+          acceptedCodeEl.textContent = code;
+          statusBox.innerHTML = `Attempt <strong>#${attempts}</strong>: <span class="ok"><strong>valid code found</strong></span>. Process stopped successfully.`;
+          running = false;
+          return;
+        } else {
+          lastResultEl.innerHTML = `<span class="bad">Invalid</span>`;
+          statusBox.innerHTML = `Attempt <strong>#${attempts}</strong>: <span class="bad"><strong>invalid</strong></span>. Erasing and trying again...`;
+          await wait(220);
+          await eraseCode(token);
+          await wait(180);
+        }
       }
+    }
+
+    startBtn.addEventListener("click", () => {
+      if (running) return;
+      runGenerator();
     });
-  } else {
-    micBtn.disabled = true;
-    micBtn.style.opacity = 0.3;
-    setStatus('VOICE INPUT UNSUPPORTED IN THIS BROWSER', false);
-  }
 
-  // welcome line
-  setTimeout(() => {
-    addLine('ai', "Interface online. Tap the mic and speak, or type a command below.");
-  }, 400);
+    stopBtn.addEventListener("click", () => {
+      running = false;
+      generationToken++;
+      statusBox.innerHTML = `Process manually stopped.`;
+    });
 
-})();
-</script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add("visible");
+      });
+    }, { threshold: 0.15 });
 
+    document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
